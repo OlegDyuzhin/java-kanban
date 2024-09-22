@@ -1,4 +1,10 @@
-package ru.yandex.javaCanban;
+package controllers;
+
+import model.tasks.Epic;
+import model.tasks.Subtask;
+import model.tasks.Task;
+import model.util.Status;
+import model.util.TypeTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +47,9 @@ public class TaskManager {
             epics.get(subtasks.get(id).getEpicId()).removeSubtaskId(id);
         }
         subtasks.clear();
+        for (Integer ids : epics.keySet()) {
+            checkEpicStatus(ids);
+        }
     }
 
     public Task getTaskById(int id) {
@@ -73,12 +82,7 @@ public class TaskManager {
             case EPIC -> {
                 ((Epic) task).setSubtasksId(epics.get(task.getId()).getSubtasksId());
                 epics.put(task.getId(), (Epic) task);
-                if (task.getStatus() == Status.DONE) {
-                    for (Integer id : ((Epic) task).getSubtasksId()) {
-                        subtasks.get(id).setStatus(Status.DONE);
-                    }
-                }
-
+                checkEpicStatus(task.getId());
             }
         }
     }
@@ -87,8 +91,10 @@ public class TaskManager {
         switch (typeToId.get(id)) {
             case TASK -> tasks.remove(id);
             case SUBTASK -> {
-                epics.get(subtasks.get(id).getEpicId()).removeSubtaskId(id);
+                int epicId = subtasks.get(id).getEpicId();
+                epics.get(epicId).removeSubtaskId(id);
                 subtasks.remove(id);
+                checkEpicStatus(epicId);
             }
             case EPIC -> {
                 for (Integer i : epics.get(id).getSubtasksId()) {

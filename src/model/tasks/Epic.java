@@ -1,16 +1,15 @@
-package ru.yandex.javaCanban;
+package model.tasks;
+
+import model.util.TypeTask;
 
 import java.util.ArrayList;
 
 public class Epic extends Task {
     private ArrayList<Integer> subtasksId = new ArrayList<>();
 
-    public Epic(String name, String description, Status status, int id) {
-        super(name, description, status, id);
-    }
-
     public Epic(String name, String description) {
         super(name, description);
+        this.typeTask = TypeTask.EPIC;
     }
 
     public ArrayList<Integer> getSubtasksId() {
@@ -26,7 +25,6 @@ public class Epic extends Task {
     }
 
     public void setSubtasks(Subtask subtask) {
-
         subtask.setEpicId(super.getId());
         subtasksId.add(subtask.getId());
     }

@@ -1,4 +1,8 @@
-package ru.yandex.javaCanban;
+import controllers.TaskManager;
+import model.tasks.Epic;
+import model.tasks.Subtask;
+import model.tasks.Task;
+import model.util.Status;
 
 public class Main {
 
@@ -37,7 +41,6 @@ public class Main {
                 subtask1.getId(), subtask1.getEpicId()));
         tm.updateTask(new Subtask(subtask3.getName(), subtask3.getDescription(), Status.DONE, subtask3.getId(),
                 subtask3.getEpicId()));
-        tm.updateTask(new Epic(epic1.getName(), epic1.getDescription(), Status.DONE, epic1.getId()));
 
         System.out.println("..............");
         System.out.println(tm.getAllEpics());
@@ -49,7 +52,6 @@ public class Main {
         System.out.println(tm.getAllTasks());
         System.out.println(tm.getAllSubtasks());
         System.out.println(tm.getAllEpics());
-
     }
 
 

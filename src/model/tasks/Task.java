@@ -1,4 +1,7 @@
-package ru.yandex.javaCanban;
+package model.tasks;
+
+import model.util.Status;
+import model.util.TypeTask;
 
 import java.util.Objects;
 
@@ -7,23 +10,21 @@ public class Task {
     private final String description;
     private int id;
     private Status status;
-    private TypeTask typeTask;
+    protected TypeTask typeTask;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
         this.status = Status.NEW;
-        this.typeTask = getTypeClass();
+        this.typeTask = TypeTask.TASK;
     }
 
-    private TypeTask getTypeClass() {
-        String typeClass = this.getClass().getSimpleName();
-        switch (typeClass) {
-            case "Task" -> typeTask = TypeTask.TASK;
-            case "Subtask" -> typeTask = TypeTask.SUBTASK;
-            case "Epic" -> typeTask = TypeTask.EPIC;
-        }
-        return typeTask;
+    public Task(String name, String description, Status status, int id) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.id = id;
+        this.typeTask = TypeTask.TASK;
     }
 
     public void setStatus(Status status) {
@@ -36,14 +37,6 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Task(String name, String description, Status status, int id) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.id = id;
-        this.typeTask = getTypeClass();
     }
 
     public TypeTask getTypeTask() {

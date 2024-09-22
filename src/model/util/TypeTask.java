@@ -1,4 +1,4 @@
-package ru.yandex.javaCanban;
+package model.util;
 
 public enum TypeTask {
     TASK,
