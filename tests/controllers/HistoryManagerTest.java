@@ -31,28 +31,28 @@ public class HistoryManagerTest {
         subtask3 = new Subtask("SubTask 3", "Subtask3Description");
         subtask4 = new Subtask("SubTask 4", "Subtask4Description");
     }
+
     @DisplayName("Проверка на добавление Тасков")
     @Test
     void addTaskTest() {
-        List<Task> history = hm.getHistoryTask();
-        assertEquals(0, history.size(), "При создании список просмотренных задач не пуст");
-        history.add(task1);
-        assertEquals(1, history.size(), "Задача не добавляется");
+        assertEquals(0, hm.getHistoryTask().size(), "При создании список просмотренных задач не пуст");
+        hm.add(task1);
+        assertEquals(1, hm.getHistoryTask().size(), "Задача не добавляется");
         assertEquals(task1, hm.getHistoryTask().getFirst(), "Задачи не совпадают");
-        history.add(epic1);
-        history.add(subtask1);
-        assertEquals(3, history.size(), "Задачи других типов не добавляются");
+        hm.add(epic1);
+        hm.add(subtask1);
+        assertEquals(3, hm.getHistoryTask().size(), "Задачи других типов не добавляются");
         assertEquals(subtask1, hm.getHistoryTask().getLast(), "Последняя задача не совпадает");
 
         List<Task> historyTest = Arrays.asList(task1, epic1, subtask1);
-        assertArrayEquals(historyTest.toArray(), history.toArray(), "Добавленные задачи не совпадают");
+        assertArrayEquals(historyTest.toArray(), hm.getHistoryTask().toArray(), "Добавленные задачи не совпадают");
     }
 
     @DisplayName("Проверка на максимальное количество задач")
     @Test
     void addMaxCapacityTest() {
         for (int i = 0; i < 10; i++) {
-            hm.add(new Task("Задача " + i, "Описание"+ i));
+            hm.add(new Task("Задача " + i, "Описание" + i));
         }
         assertEquals(10, hm.getHistoryTask().size(), "Максимальное количество задач не совпадает");
         hm.add(epic2);

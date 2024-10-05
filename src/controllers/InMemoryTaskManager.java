@@ -19,7 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
-    public List<Task> getHistory(){
+    public List<Task> getHistory() {
         return historyManager.getHistoryTask();
     }
 
@@ -69,6 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = null;
+        if (!(tasks.containsKey(id) || subtasks.containsKey(id) || epics.containsKey(id))) return task;
         switch (typeToId.get(id)) {
             case TASK -> task = tasks.get(id);
             case SUBTASK -> task = subtasks.get(id);
@@ -107,6 +108,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTaskById(int id) {
+        if (!(tasks.containsKey(id) || subtasks.containsKey(id) || epics.containsKey(id))) return;
         switch (typeToId.get(id)) {
             case TASK -> tasks.remove(id);
             case SUBTASK -> {

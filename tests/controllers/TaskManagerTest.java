@@ -112,7 +112,7 @@ class TaskManagerTest {
     @Test
     void entryTaskTest() {
         assertNotEquals(epic.getClass(), Subtask.class, "Метод добавления сабтаска сможет принять эпик"); //п.3 ТЗ нельзя передать эпик в качестве сабтаска
-         // п. 4 ТЗ subtask не может сам себе присваивать EpicId это делает эпик
+        // п. 4 ТЗ subtask не может сам себе присваивать EpicId это делает эпик
 
     }
 
@@ -143,7 +143,7 @@ class TaskManagerTest {
 
     @DisplayName("Проверка задач на обновление статуса")
     @Test
-    void epicStatusTest(){
+    void epicStatusTest() {
         manager.setTask(task);
         manager.setTask(epic);
         manager.setTask(subtask);
@@ -155,8 +155,8 @@ class TaskManagerTest {
         assertEquals(subtask.getStatus(), Status.NEW, "Статус при создании не NEW");
         assertEquals(epic.getStatus(), Status.NEW, "Статус при создании не NEW");
 
-        manager.updateTask(new Task(task.getName(),task.getDescription(),Status.DONE,task.getId()));
-        manager.updateTask(new Subtask(subtask.getName(),subtask.getDescription(),Status.IN_PROGRESS,subtask.getId(),
+        manager.updateTask(new Task(task.getName(), task.getDescription(), Status.DONE, task.getId()));
+        manager.updateTask(new Subtask(subtask.getName(), subtask.getDescription(), Status.IN_PROGRESS, subtask.getId(),
                 epic.getId()));
         assertEquals(Status.DONE, manager.getTaskById(task.getId()).getStatus(),
                 "Статус после обновления Таска не соответствует");
@@ -168,5 +168,12 @@ class TaskManagerTest {
         manager.clearSubtasks();
         assertEquals(Status.NEW, manager.getTaskById(epic.getId()).getStatus(),
                 "Статус Эпика после удаления Сабтаска не соответствует");
+    }
+
+    @DisplayName("Проверка на несуществующие id")
+    @Test
+    void getNonExistentTask() {
+        assertNull(manager.getTaskById(0), "Ошибка при добавлении");
+
     }
 }
