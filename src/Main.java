@@ -1,3 +1,4 @@
+import controllers.Managers;
 import controllers.TaskManager;
 import model.tasks.Epic;
 import model.tasks.Subtask;
@@ -8,7 +9,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager tm = new TaskManager();
+        TaskManager tm = Managers.getDefault();
+
 
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
@@ -52,6 +54,21 @@ public class Main {
         System.out.println(tm.getAllTasks());
         System.out.println(tm.getAllSubtasks());
         System.out.println(tm.getAllEpics());
+
+        System.out.println("////////");
+
+
+        for (int i = 0; i < 15; i++) {
+            tm.getTaskById(2);
+        }
+        tm.getTaskById(3);
+        int i = 1;
+        for (Task arg : tm.getHistory()) {
+
+
+            System.out.println(arg.getId() + " " + i++);
+        }
+
     }
 
 

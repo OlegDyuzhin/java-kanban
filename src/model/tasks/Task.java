@@ -39,12 +39,12 @@ public class Task {
         this.id = id;
     }
 
-    public TypeTask getTypeTask() {
-        return typeTask;
-    }
-
     public int getId() {
         return this.id;
+    }
+
+    public TypeTask getTypeTask() {
+        return typeTask;
     }
 
     public String getName() {
@@ -58,7 +58,7 @@ public class Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+      //  if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id;
     }
