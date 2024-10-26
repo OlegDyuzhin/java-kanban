@@ -18,8 +18,7 @@ public class HistoryManagerTest {
     static Epic epic1, epic2;
     static Task task1, task2, task3;
     static Subtask subtask1, subtask2, subtask3, subtask4;
-    private static int id=0;
-
+    private static int id = 0;
 
 
     @BeforeAll
@@ -66,7 +65,7 @@ public class HistoryManagerTest {
 
     @DisplayName("Проверка на добавление 1 Таска / 2 раза")
     @Test
-    void addSingleTaskTest(){
+    void addSingleTaskTest() {
         hm.add(task1);
         assertEquals(1, hm.getHistoryTask().size(), "Задача не добавляется");
         hm.add(task1);
@@ -75,7 +74,7 @@ public class HistoryManagerTest {
 
     @DisplayName("Проверка на порядок списка")
     @Test
-    void procedureListTaskTest(){
+    void procedureListTaskTest() {
         hm.add(task1);
         hm.add(subtask3);
         hm.add(epic2);
@@ -89,7 +88,7 @@ public class HistoryManagerTest {
 
     @DisplayName("Проверка на удаление задач")
     @Test
-    void removeTaskTest(){
+    void removeTaskTest() {
         hm.add(task1);
         hm.add(subtask3);
         hm.add(epic2);
@@ -106,4 +105,4 @@ public class HistoryManagerTest {
         hm.remove(subtask3.getId());
         assertEquals(0, hm.getHistoryTask().size(), "список не пуст");
     }
-  }
+}
