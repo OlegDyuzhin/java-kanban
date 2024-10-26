@@ -176,4 +176,20 @@ class TaskManagerTest {
         assertNull(manager.getTaskById(0), "Ошибка при добавлении");
 
     }
+
+    @DisplayName("Проверка на удаление id сабтасов у эпиков")
+    @Test
+    void getRemoveSubtaskId() {
+        manager.setTask(epic);
+        manager.setTask(subtask);
+        manager.setTask(subtask2);
+        epic.setSubtasks(subtask);
+        epic.setSubtasks(subtask2);
+        assertEquals(2, epic.getSubtasksId().size(), "Количество сабтасков не совпадает");
+        manager.removeTaskById(subtask.getId());
+        assertEquals(1, epic.getSubtasksId().size(), "Количество сабтасков не совпадает");
+        manager.removeTaskById(subtask2.getId());
+        assertEquals(0, epic.getSubtasksId().size(), "Количество сабтасков не совпадает");
+
+    }
 }
