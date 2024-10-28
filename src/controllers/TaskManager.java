@@ -5,17 +5,16 @@ import model.tasks.Subtask;
 import model.tasks.Task;
 import model.util.TypeTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
     int getCounterId(TypeTask typeTask);
 
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    ArrayList<Task> getAllEpics();
+    List<Task> getAllEpics();
 
-    ArrayList<Task> getAllSubtasks();
+    List<Task> getAllSubtasks();
 
     void clearTasks();
 
@@ -31,7 +30,7 @@ public interface TaskManager {
 
     void removeTaskById(int id);
 
-    ArrayList<Subtask> getSubtaskEpic(Epic epic);
+    List<Subtask> getSubtaskEpic(Epic epic);
 
     void checkEpicStatus(int epicId);
 
