@@ -18,6 +18,10 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, TypeTask> typeToId = new HashMap<>();
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
+    public void setCounterId(int counterId) {
+        this.counterId = counterId;
+    }
+
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistoryTask();
