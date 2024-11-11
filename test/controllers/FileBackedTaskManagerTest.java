@@ -20,7 +20,7 @@ public class FileBackedTaskManagerTest {
     Subtask subtask;
     Subtask subtask2;
     Epic epic;
-    Path path = Path.of("src\\resources\\savedTasks.csv");
+    Path path = Path.of("src", "resources", "savedTasks.csv");
 
     @BeforeEach
     void createTasks() {
