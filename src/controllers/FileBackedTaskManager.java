@@ -6,50 +6,36 @@ import model.tasks.Subtask;
 import model.tasks.Task;
 import model.util.Status;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    Path path = Path.of("src\\resources\\savedTasks.csv"); //файл по умолчанию
+    private Path path = Path.of("src", "resources", "savedTasks.csv"); //файл по умолчанию
     private static final String HEADER_CSV = "id,type,name,status,description,epic";
 
     public FileBackedTaskManager(Path path) {
-        if (path.toFile().exists()) {
-            this.path = path;
-        } else {
-            try {
-                Files.createFile(path);
-            } catch (IOException e) {
-                throw new ManagerSaveException("Не удалось создать файл");
-            }
-        }
+        this.path = path;
     }
 
     public FileBackedTaskManager() {
-        if (!path.toFile().exists()) {
-            try {
-                Files.createFile(path);
-            } catch (IOException e) {
-                throw new ManagerSaveException("Не удалось создать файл");
-            }
-        }
     }
 
     public void save() {
-        try (BufferedWriter br = new BufferedWriter(new FileWriter(path.toFile()))) {
-            br.write(HEADER_CSV + "\n");
+        try (BufferedWriter bw = Files.newBufferedWriter(path)) {
+            bw.write(HEADER_CSV + "\n");
             for (Task task : getAllTasks()) {
-                br.write(task.toStringCSV() + "\n");
+                bw.write(task.toStringCSV() + "\n");
             }
             for (Task epic : getAllEpics()) {
-                br.write(epic.toStringCSV() + "\n");
+                bw.write(epic.toStringCSV() + "\n");
             }
             for (Task subtask : getAllSubtasks()) {
-                br.write(subtask.toStringCSV() + "\n");
+                bw.write(subtask.toStringCSV() + "\n");
             }
-
         } catch (IOException e) {
             throw new ManagerSaveException("Не удалось сохранить данные в файл", e);
         }
@@ -58,7 +44,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(Path path) {
         FileBackedTaskManager tm = new FileBackedTaskManager(path);
         int maxId = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
+        try (BufferedReader br = Files.newBufferedReader(path)) {
             br.readLine();
             while (br.ready()) {
                 String line = br.readLine();
@@ -73,7 +59,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 ep.setSubtasks(sub);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Не удалось восстановить данные из файла или указанный файл не найден");
         } finally {
             tm.setCounterId(maxId + 1);
         }
@@ -89,7 +75,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(tasks[3]);
         String description = tasks[4];
         Integer epicId = tasks.length > 5 ? Integer.valueOf(tasks[5]) : null;
-
 
         switch (type) {
             case "TASK" -> {
