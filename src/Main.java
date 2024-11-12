@@ -1,14 +1,15 @@
-import controllers.Managers;
-import controllers.TaskManager;
+import controllers.FileBackedTaskManager;
 import model.tasks.Epic;
 import model.tasks.Subtask;
 import model.tasks.Task;
+
+import java.nio.file.Path;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager tm = Managers.getDefault();
+        FileBackedTaskManager tm = new FileBackedTaskManager();
 
         /*
          * Дополнительное задание. Реализуем пользовательский сценарий
@@ -35,24 +36,16 @@ public class Main {
         Epic epic2 = new Epic("Эпик 2", "Эпик без подзадач");
         tm.setTask(epic2);
 
-        tm.getTaskById(subtask1.getId());
-        System.out.println(tm.getHistory());
-        tm.getTaskById(task1.getId());
-        System.out.println(tm.getHistory());
-        tm.getTaskById(task2.getId());
-        System.out.println(tm.getHistory());
-        tm.getTaskById(task1.getId());
-        System.out.println(tm.getHistory());
-        tm.removeTaskById(task2.getId());
-        System.out.println(tm.getHistory());
+        System.out.println(tm.getAllTasks());
+        System.out.println(tm.getAllEpics());
+        System.out.println(tm.getAllSubtasks());
+        System.out.println("-------");
+        tm.save();
 
-        tm.getTaskById(subtask1.getId());
-        tm.getTaskById(subtask2.getId());
-        tm.getTaskById(subtask3.getId());
-        tm.getTaskById(epic1.getId());
-        System.out.println(tm.getHistory());
-        tm.removeTaskById(epic1.getId());
-        System.out.println(tm.getHistory());
+        tm = FileBackedTaskManager.loadFromFile(Path.of("src/resources/savedTasks.csv"));
+        System.out.println(tm.getAllTasks());
+        System.out.println(tm.getAllEpics());
+        System.out.println(tm.getAllSubtasks());
 
     }
 

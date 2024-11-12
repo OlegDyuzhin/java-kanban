@@ -31,4 +31,9 @@ public class Subtask extends Task {
                 " epicId=" + epicId +
                 "}";
     }
+
+    @Override
+    public String toStringCSV() {
+        return super.toStringCSV().concat(',' + String.valueOf(epicId));
+    }
 }
