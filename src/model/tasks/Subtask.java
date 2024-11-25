@@ -3,6 +3,9 @@ package model.tasks;
 import model.util.Status;
 import model.util.TypeTask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -13,6 +16,18 @@ public class Subtask extends Task {
 
     public Subtask(String name, String description, Status status, int id, int epicId) {
         super(name, description, status, id);
+        this.epicId = epicId;
+        this.typeTask = TypeTask.SUBTASK;
+    }
+
+    public Subtask(String name, String description, LocalDateTime startTime, Duration duration) {
+        super(name, description, startTime, duration);
+        this.typeTask = TypeTask.SUBTASK;
+    }
+
+    public Subtask(String name, String description, Status status, int id, LocalDateTime startTime,
+                   Duration duration, int epicId) {
+        super(name, description, status, id, startTime, duration);
         this.epicId = epicId;
         this.typeTask = TypeTask.SUBTASK;
     }
