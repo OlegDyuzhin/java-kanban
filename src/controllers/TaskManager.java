@@ -35,4 +35,6 @@ public interface TaskManager {
     void checkEpicStatus(int epicId);
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
 }

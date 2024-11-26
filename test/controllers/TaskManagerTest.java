@@ -241,6 +241,35 @@ class TaskManagerTest {
     void getPrioritizedTaskTest() {
         createTaskThisTimeTest();
         Task[] tasks = new Task[]{subtask, task, subtask2};
-        assertArrayEquals(manager.getPrioritizedTask().stream().toArray(), tasks, "Задачи не расставлены по порядку");
+        assertArrayEquals(manager.getPrioritizedTasks().stream().toArray(), tasks, "Задачи не расставлены по порядку");
+    }
+
+    @DisplayName("Проверка удаления приорететных задач")
+    @Test
+    void clearTaskTest() {
+        createTaskThisTimeTest();
+        Task[] tasks = new Task[]{subtask, subtask2};
+        manager.clearTasks();
+        assertArrayEquals(manager.getPrioritizedTasks().stream().toArray(), tasks, "Задачи не удалены");
+        manager.clearEpics();
+        assertEquals(manager.getPrioritizedTasks().size(), 0, "Подзадачи эпика не удалены");
+        createTaskThisTimeTest();
+        tasks = new Task[]{task};
+        manager.clearSubtasks();
+        assertArrayEquals(manager.getPrioritizedTasks().stream().toArray(), tasks, "Подзадачи не удалены");
+        manager.removeTaskById(task.getId());
+        assertEquals(manager.getPrioritizedTasks().size(), 0, "Задача не удалена");
+    }
+
+    @DisplayName("Проверка расчета времен эпика")
+    @Test
+    void checkEpicTimeTest() {
+        createTaskThisTimeTest();
+        Duration duration = subtask.getDuration().plus(subtask2.getDuration());
+        assertEquals(duration, manager.getTaskById(epic.getId()).getDuration(), "Длительности расчитываются неверно");
+        LocalDateTime startTime = subtask.getStartTime();
+        assertEquals(startTime, manager.getTaskById(epic.getId()).getStartTime(), "Длительности расчитываются неверно");
+        LocalDateTime endTime = subtask2.getEndTime();
+        assertEquals(endTime, manager.getTaskById(epic.getId()).getEndTime(), "Длительности расчитываются неверно");
     }
 }

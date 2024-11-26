@@ -16,8 +16,8 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, TypeTask> typeToId = new HashMap<>();
-    private final Set<Task> prioritizedTask = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final Set<Task> prioritizedTask = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     private int counterId = 0;
 
     public void setCounterId(int counterId) {
@@ -53,12 +53,18 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearTasks() {
         tasks.clear();
+        for (Task task : getPrioritizedTasks()) {
+            if (task.getTypeTask() == TypeTask.TASK) prioritizedTask.remove(task);
+        }
     }
 
     @Override
     public void clearEpics() {
         epics.clear();
         subtasks.clear();
+        for (Task task : getPrioritizedTasks()) {
+            if (task.getTypeTask() == TypeTask.SUBTASK) prioritizedTask.remove(task);
+        }
     }
 
     @Override
@@ -70,6 +76,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer ids : epics.keySet()) {
             checkEpicStatus(ids);
             checkEpicStartTimeAndDuration((Epic) getTaskById(ids));
+            for (Task task : getPrioritizedTasks()) {
+                if (task.getTypeTask() == TypeTask.SUBTASK) prioritizedTask.remove(task);
+            }
         }
     }
 
@@ -91,11 +100,17 @@ public class InMemoryTaskManager implements TaskManager {
         task.setId(getCounterId(task.getTypeTask()));
         if (task.getStartTime() != null) validateLocalDateTimeInterval(task);
         switch (task.getTypeTask()) {
-            case TASK -> tasks.put(task.getId(), task);
-            case SUBTASK -> subtasks.put(task.getId(), (Subtask) task);
+            case TASK -> {
+                tasks.put(task.getId(), task);
+                if (task.getStartTime() != null) prioritizedTask.add(task);
+            }
+            case SUBTASK -> {
+                subtasks.put(task.getId(), (Subtask) task);
+                if (task.getStartTime() != null) prioritizedTask.add(task);
+            }
             case EPIC -> epics.put(task.getId(), (Epic) task);
         }
-        if (task.getStartTime() != null) prioritizedTask.add(task);
+
     }
 
     @Override
@@ -134,10 +149,12 @@ public class InMemoryTaskManager implements TaskManager {
                 checkEpicStatus(epicId);
                 checkEpicStartTimeAndDuration((Epic) getTaskById(epicId));
                 historyManager.remove(id);
+                prioritizedTask.remove(tasks.get(id));
             }
             case EPIC -> {
                 for (Integer i : epics.get(id).getSubtasksId()) {
                     subtasks.remove(i);
+                    prioritizedTask.remove(tasks.get(i));
                     historyManager.remove(i);
                 }
                 epics.get(id).getSubtasksId().clear();
@@ -194,8 +211,11 @@ public class InMemoryTaskManager implements TaskManager {
                 .orElse(null);
         epic.setEndTime(endTime);
 
-
-        if (startTime != null || endTime != null) epic.setDuration(Duration.between(startTime, endTime));
+        Duration duration = getSubtaskEpic(epic).stream()
+                .filter(subtask -> subtask.getStartTime() != null)
+                .map(Subtask::getDuration)
+                .reduce(Duration.ZERO, Duration::plus);
+        epic.setDuration(duration);
     }
 
     public void validateLocalDateTimeInterval(Task validateTask) {
@@ -208,7 +228,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public Set<Task> getPrioritizedTask() {
-        return prioritizedTask;
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTask);
     }
 }
