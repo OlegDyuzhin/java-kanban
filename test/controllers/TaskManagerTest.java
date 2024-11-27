@@ -1,5 +1,6 @@
 package controllers;
 
+import exceptions.TaskValidationTimeException;
 import model.tasks.Epic;
 import model.tasks.Subtask;
 import model.tasks.Task;
@@ -8,12 +9,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskManagerTest {
-    TaskManager manager = Managers.getDefault();
+    InMemoryTaskManager manager = new InMemoryTaskManager();
     Task task;
     Subtask subtask;
     Subtask subtask2;
@@ -191,5 +194,82 @@ class TaskManagerTest {
         manager.removeTaskById(subtask2.getId());
         assertEquals(0, epic.getSubtasksId().size(), "Количество сабтасков не совпадает");
 
+    }
+
+    @DisplayName("Создание задач с временем")
+    @Test
+    void createTaskThisTimeTest() {
+        task = new Task("Test addNewTask", "Test addNewTask description", LocalDateTime.of(
+                2024, 1, 1, 3, 15), Duration.ofMinutes(15));
+        epic = new Epic("Test addNewEpic", "Test addNewEpic description");
+        subtask = new Subtask("Test addNewSubtask", "Test addNewSubtask description",
+                LocalDateTime.of(2024, 1, 1, 3, 0), Duration.ofMinutes(15));
+        subtask2 = new Subtask("Test addNewSubtask2", "Test addNewSubtask2 description",
+                LocalDateTime.of(2024, 1, 1, 3, 45), Duration.ofMinutes(15));
+        manager.setTask(task);
+        manager.setTask(epic);
+        manager.setTask(subtask);
+        manager.setTask(subtask2);
+        manager.setSubtaskInEpic(epic, subtask);
+        manager.setSubtaskInEpic(epic, subtask2);
+
+        assertEquals(task, manager.getTaskById(task.getId()), "Задача в менеджере не совпадает");
+        assertEquals(subtask, manager.getTaskById(subtask.getId()), "Подзадача в менеджере не совпадает");
+        assertEquals(epic, manager.getTaskById(epic.getId()), "Подзадача в менеджере не совпадает");
+    }
+
+    @DisplayName("Проверка пересечения времени")
+    @Test
+    void validateTaskCrossTimeTest() {
+        createTaskThisTimeTest();
+        Task task2 = new Task("Test addNewTask", "Test addNewTask description", LocalDateTime.of(
+                2024, 1, 1, 3, 10), Duration.ofMinutes(15));
+        assertThrows(TaskValidationTimeException.class, () -> manager.setTask(task2),
+                "Пересечение не создает ошибки");
+        Task task3 = new Task("Test addNewTask", "Test addNewTask description", LocalDateTime.of(
+                2024, 1, 1, 3, 59, 59), Duration.ofMinutes(15));
+        assertThrows(TaskValidationTimeException.class, () -> manager.setTask(task3),
+                "Пересечение по нижней границе не создает ошибки");
+        Task task4 = new Task("Test addNewTask", "Test addNewTask description", LocalDateTime.of(
+                2024, 1, 1, 2, 45, 1), Duration.ofMinutes(15));
+        assertThrows(TaskValidationTimeException.class, () -> manager.setTask(task4),
+                "Пересечение по верхней границе не создает ошибки");
+    }
+
+    @DisplayName("Проверка сортировки тасков по времени")
+    @Test
+    void getPrioritizedTaskTest() {
+        createTaskThisTimeTest();
+        Task[] tasks = new Task[]{subtask, task, subtask2};
+        assertArrayEquals(manager.getPrioritizedTasks().stream().toArray(), tasks, "Задачи не расставлены по порядку");
+    }
+
+    @DisplayName("Проверка удаления приорететных задач")
+    @Test
+    void clearTaskTest() {
+        createTaskThisTimeTest();
+        Task[] tasks = new Task[]{subtask, subtask2};
+        manager.clearTasks();
+        assertArrayEquals(manager.getPrioritizedTasks().stream().toArray(), tasks, "Задачи не удалены");
+        manager.clearEpics();
+        assertEquals(manager.getPrioritizedTasks().size(), 0, "Подзадачи эпика не удалены");
+        createTaskThisTimeTest();
+        tasks = new Task[]{task};
+        manager.clearSubtasks();
+        assertArrayEquals(manager.getPrioritizedTasks().stream().toArray(), tasks, "Подзадачи не удалены");
+        manager.removeTaskById(task.getId());
+        assertEquals(manager.getPrioritizedTasks().size(), 0, "Задача не удалена");
+    }
+
+    @DisplayName("Проверка расчета времен эпика")
+    @Test
+    void checkEpicTimeTest() {
+        createTaskThisTimeTest();
+        Duration duration = subtask.getDuration().plus(subtask2.getDuration());
+        assertEquals(duration, manager.getTaskById(epic.getId()).getDuration(), "Длительности расчитываются неверно");
+        LocalDateTime startTime = subtask.getStartTime();
+        assertEquals(startTime, manager.getTaskById(epic.getId()).getStartTime(), "Длительности расчитываются неверно");
+        LocalDateTime endTime = subtask2.getEndTime();
+        assertEquals(endTime, manager.getTaskById(epic.getId()).getEndTime(), "Длительности расчитываются неверно");
     }
 }
