@@ -7,7 +7,26 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {
-    private int epicId;
+    private Integer epicId;
+
+    public Subtask(String name, String description, LocalDateTime startTime, Duration duration, Integer epicId) {
+        super(name, description, startTime, duration);
+        this.epicId = epicId;
+        this.typeTask = TypeTask.SUBTASK;
+    }
+
+    public Subtask(String name, String description, Status status, int id, LocalDateTime startTime, Duration duration,
+                   Integer epicId) {
+        super(name, description, status, id, startTime, duration);
+        this.epicId = epicId;
+        this.typeTask = TypeTask.SUBTASK;
+    }
+
+    public Subtask(String name, String description, Integer epicId) {
+        super(name, description);
+        this.epicId = epicId;
+        this.typeTask = TypeTask.SUBTASK;
+    }
 
     public Subtask(String name, String description) {
         super(name, description);
@@ -32,7 +51,7 @@ public class Subtask extends Task {
         this.typeTask = TypeTask.SUBTASK;
     }
 
-    public int getEpicId() {
+    public Integer getEpicId() {
         return epicId;
     }
 
