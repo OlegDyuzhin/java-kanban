@@ -1,7 +1,11 @@
 package HttpServer;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import controllers.Managers;
 import controllers.TaskManager;
 import model.tasks.Epic;
 import model.tasks.Subtask;
@@ -10,9 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import server.DurationAdapter;
 import server.HttpTaskServer;
-import server.LocalDateTimeAdapter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,11 +41,7 @@ public class HttpTaskManagerTasksTest {
         manager.clearSubtasks();
         manager.clearEpics();
         taskServer.start();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());
-        gsonBuilder.serializeNulls();
-        this.gson = gsonBuilder.create();
+        this.gson = Managers.getDefaultGson();
     }
 
     @AfterEach

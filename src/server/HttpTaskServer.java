@@ -3,6 +3,7 @@ package server;
 import com.sun.net.httpserver.HttpServer;
 import controllers.Managers;
 import controllers.TaskManager;
+import server.handlers.BaseHttpHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,12 +11,8 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     private static final int PORT = 8080;
 
-    private HttpServer server;
-    private TaskManager taskManager;
-
-    public TaskManager getTaskManager() {
-        return taskManager;
-    }
+    private final HttpServer server;
+    private final TaskManager taskManager;
 
     public HttpTaskServer() throws IOException {
         taskManager = Managers.getDefault();
@@ -32,6 +29,10 @@ public class HttpTaskServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public TaskManager getTaskManager() {
+        return taskManager;
     }
 
     public void start() {
